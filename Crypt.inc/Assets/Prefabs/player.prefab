@@ -618,7 +618,7 @@ Transform:
   m_GameObject: {fileID: 6047639037301989770}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.9, z: 0}
+  m_LocalPosition: {x: 0, y: 0.332, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -754,7 +754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4f463a75631c004fbd5b9e06edc8710, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TabletToggle
-  flashlight: {fileID: 2849575185548584489}
+  tablet: {fileID: 2849575185548584489}
   toggleKey: 9
 --- !u!1 &7940379304430733980
 GameObject:

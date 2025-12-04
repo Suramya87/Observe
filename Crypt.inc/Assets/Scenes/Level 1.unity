@@ -413,6 +413,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 237825864522923370, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 23.559982
+      objectReference: {fileID: 0}
+    - target: {fileID: 237825864522923370, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.7800016
+      objectReference: {fileID: 0}
+    - target: {fileID: 237825864522923370, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -17.089983
+      objectReference: {fileID: 0}
+    - target: {fileID: 237825864522923370, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6739207
+      objectReference: {fileID: 0}
+    - target: {fileID: 237825864522923370, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.12553775
+      objectReference: {fileID: 0}
+    - target: {fileID: 237825864522923370, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.71574754
+      objectReference: {fileID: 0}
+    - target: {fileID: 237825864522923370, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.13332924
+      objectReference: {fileID: 0}
+    - target: {fileID: 237825864522923370, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 21.104
+      objectReference: {fileID: 0}
     - target: {fileID: 475799791144509167, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
       propertyPath: m_LocalPosition.x
       value: 313.5
@@ -453,9 +485,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3069418475975960695, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_Layer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3971654334794200655, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
       propertyPath: m_Name
       value: Base 4 Prefab 1 (Pad 0)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5615092290170882676, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 70.992
+      objectReference: {fileID: 0}
+    - target: {fileID: 5615092290170882676, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -9.214
+      objectReference: {fileID: 0}
+    - target: {fileID: 5615092290170882676, guid: 2ada5c59ad7646844992bfd18ad4cb08, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -118.961
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -749,11 +797,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4004223990098648610, guid: 3fd17176021e3af4b9cabf54c451a157, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4004223990098648610, guid: 3fd17176021e3af4b9cabf54c451a157, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4373586977859286868, guid: 3fd17176021e3af4b9cabf54c451a157, type: 3}
       propertyPath: m_Pivot.x
@@ -878,6 +926,10 @@ PrefabInstance:
     - target: {fileID: 7146253509665902174, guid: 3fd17176021e3af4b9cabf54c451a157, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8100031415885699700, guid: 3fd17176021e3af4b9cabf54c451a157, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1308,7 +1360,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7330802011113850189, guid: a2d2caad190301c4f93b5bec6cfd294a, type: 3}
       propertyPath: startTimeOfDay
-      value: 18.9
+      value: 23.8
       objectReference: {fileID: 0}
     - target: {fileID: 7330802011113850189, guid: a2d2caad190301c4f93b5bec6cfd294a, type: 3}
       propertyPath: directionalLight
