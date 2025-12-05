@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-
 // coconut
 [RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(AudioSource))]
 public class PlayerControllerCC : MonoBehaviour
 {
     [Header("Move")]
@@ -34,6 +34,45 @@ public class PlayerControllerCC : MonoBehaviour
     public float interactDistance = 3f;
     public LayerMask interactMask = ~0;
 
+    // ---------- Footstep data ----------
+    [System.Serializable]
+    public class FootstepSet
+    {
+        public string name;          // e.g. "Concrete", "Grass"
+        public LayerMask layers;     // which layers this set applies to
+        public AudioClip[] clips;    // sounds for that surface
+    }
+
+    [Header("Footsteps")]
+    [Tooltip("Different footsteps per surface type")]
+    public FootstepSet[] footstepSets;
+
+    [Tooltip("Seconds between steps at normal walking speed")]
+    [Range(0.05f, 1.0f)]
+    public float baseStepInterval = 0.4f;
+
+    [Tooltip("Multiplier on step interval while sprinting ( <1 = faster, >1 = slower )")]
+    public float sprintStepMultiplier = 0.75f;
+
+    [Tooltip("Multiplier on step interval while crouching ( >1 = slower )")]
+    public float crouchStepMultiplier = 1.5f;
+
+    [Tooltip("Multiplier on step interval while crawling ( >1 = slower )")]
+    public float crawlStepMultiplier = 2.0f;
+
+    [Tooltip("Minimum movement magnitude to count as 'walking' for sounds")]
+    public float minMoveMagnitudeForSteps = 0.1f;
+
+    [Tooltip("Max distance for downward surface raycast")]
+    public float footstepRayDistance = 1.5f;
+
+    [Tooltip("Which layers count as ground for surface detection")]
+    public LayerMask groundMask = ~0;
+
+    float stepTimer = 0f;
+    AudioSource footstepSource;     // now private, auto-grabbed
+    // ----------------------------------
+
     CharacterController cc;
     Vector3 velocity;
     float rotX;
@@ -41,17 +80,19 @@ public class PlayerControllerCC : MonoBehaviour
     void Awake()
     {
         cc = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        footstepSource = GetComponent<AudioSource>();
+
+        // optional: make sure it doesn't auto-play anything
+        footstepSource.playOnAwake = false;
     }
 
     void Update()
     {
-        // Bail early while paused (no camera, no movement, no interaction)
         if (GamePauseController.IsPaused) return;
 
         Look();
         Move();
+        UpdateCameraHeight();
         Interact();
     }
 
@@ -65,7 +106,6 @@ public class PlayerControllerCC : MonoBehaviour
         if (cam) cam.localRotation = Quaternion.Euler(rotX, 0f, 0f);
     }
 
-    // Movement with crouch and crawl
     void Move()
     {
         bool grounded = cc.isGrounded;
@@ -92,16 +132,21 @@ public class PlayerControllerCC : MonoBehaviour
         }
 
         // Determine movement speed
+        bool isSprinting = Input.GetButton("Sprint") && !isCrouching && !isCrawling;
         float speed = moveSpeed;
-        if (Input.GetButton("Sprint") && !isCrouching && !isCrawling)
+
+        if (isSprinting)
             speed *= sprintMultiplier;
         else if (isCrouching)
             speed *= crouchMultiplier;
         else if (isCrawling)
             speed *= crawlMultiplier;
 
-        // Apply movement
-        cc.Move(input * speed * Time.deltaTime);
+        Vector3 move = input * speed;
+        cc.Move(move * Time.deltaTime);
+
+        // footsteps
+        HandleFootsteps(grounded, input, isSprinting);
 
         // Jump
         if (grounded && Input.GetButtonDown("Jump") && !isCrawling)
@@ -111,11 +156,73 @@ public class PlayerControllerCC : MonoBehaviour
         cc.Move(velocity * Time.deltaTime);
     }
 
+    void HandleFootsteps(bool grounded, Vector3 input, bool isSprinting)
+    {
+        if (!grounded)
+        {
+            stepTimer = 0f;
+            return;
+        }
+
+        bool isMoving = input.sqrMagnitude > (minMoveMagnitudeForSteps * minMoveMagnitudeForSteps);
+        if (!isMoving)
+        {
+            stepTimer = 0f;
+            return;
+        }
+
+        float interval = baseStepInterval;
+
+        if (isCrawling)
+            interval *= crawlStepMultiplier;
+        else if (isCrouching)
+            interval *= crouchStepMultiplier;
+        else if (isSprinting)
+            interval *= sprintStepMultiplier;
+
+        stepTimer -= Time.deltaTime;
+        if (stepTimer <= 0f)
+        {
+            FootstepSet set = GetCurrentFootstepSet();
+            PlayFootstep(set);
+            stepTimer = interval;
+        }
+    }
+
+    FootstepSet GetCurrentFootstepSet()
+    {
+        Ray ray = new Ray(transform.position + Vector3.up * 0.1f, Vector3.down);
+        if (Physics.Raycast(ray, out RaycastHit hit, footstepRayDistance, groundMask, QueryTriggerInteraction.Ignore))
+        {
+            int surfaceLayerMask = 1 << hit.collider.gameObject.layer;
+
+            for (int i = 0; i < footstepSets.Length; i++)
+            {
+                FootstepSet set = footstepSets[i];
+                if (set != null && (set.layers.value & surfaceLayerMask) != 0)
+                    return set;
+            }
+        }
+
+        // no match → no sound
+        return null;
+    }
+
+    void PlayFootstep(FootstepSet set)
+    {
+        if (!footstepSource) return;
+        if (set == null || set.clips == null || set.clips.Length == 0) return;
+
+        int index = Random.Range(0, set.clips.Length);
+        AudioClip clip = set.clips[index];
+        if (clip != null)
+            footstepSource.PlayOneShot(clip);
+    }
+
     void UpdateCameraHeight()
     {
         if (!cam) return;
 
-        // pick target camera position based on state
         Vector3 targetCamPos = standCamPos;
 
         if (isCrouching)
@@ -123,7 +230,6 @@ public class PlayerControllerCC : MonoBehaviour
         else if (isCrawling)
             targetCamPos = crawlCamPos;
 
-        // smooth transition
         cam.localPosition = Vector3.Lerp(
             cam.localPosition,
             targetCamPos,
@@ -131,12 +237,9 @@ public class PlayerControllerCC : MonoBehaviour
         );
     }
 
-    // LEFT-CLICK to interact
     void Interact()
     {
         if (!cam) { Debug.LogWarning("[Player] Camera reference is missing."); return; }
-
-        // only on click
         if (!Input.GetMouseButtonDown(0)) return;
 
         Ray ray = new Ray(cam.position, cam.forward);
@@ -146,7 +249,6 @@ public class PlayerControllerCC : MonoBehaviour
         var hitGO = hit.collider ? hit.collider.gameObject : null;
         if (!hitGO) return;
 
-        // collect all MonoBehaviours, filter manually to avoid any Missing Script weirdness
         MonoBehaviour[] monos = hitGO.GetComponentsInParent<MonoBehaviour>(true);
 
         IInteractable chosen = null;
@@ -158,13 +260,12 @@ public class PlayerControllerCC : MonoBehaviour
             if (!mb) continue;
 
             if (mb is PoweredInteractable pi)
-                preferredGate = pi; // remember if we find a gate
+                preferredGate = pi;
 
             if (mb is IInteractable ii && chosen == null)
-                chosen = ii; // first interactable as fallback
+                chosen = ii;
         }
 
-        // prefer the powered gate if present
         if (preferredGate != null) chosen = preferredGate;
 
         if (chosen == null)
@@ -182,5 +283,4 @@ public class PlayerControllerCC : MonoBehaviour
             Debug.LogException(ex, hitGO);
         }
     }
-
 }
