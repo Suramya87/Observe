@@ -1360,7 +1360,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7330802011113850189, guid: a2d2caad190301c4f93b5bec6cfd294a, type: 3}
       propertyPath: startTimeOfDay
-      value: 23.8
+      value: 5.1
       objectReference: {fileID: 0}
     - target: {fileID: 7330802011113850189, guid: a2d2caad190301c4f93b5bec6cfd294a, type: 3}
       propertyPath: directionalLight
