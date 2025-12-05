@@ -11,11 +11,11 @@ public class DayNightCycle : MonoBehaviour
     public float defaultCycleLength = 300f;
 
     [Header("Starting Time")]
-    [Range(0f, 24f)] public float startTimeOfDay = 8f; // <-- You can type starting time here
+    [Range(0f, 24f)] public float startTimeOfDay = 8f;
 
     [Header("Control")]
-    public bool cycleEnabled = true;        // freeze/unfreeze time
-    public bool realTimeSetAllowed = true;  // allows animator/UI to change time manually
+    public bool cycleEnabled = true;
+    public bool realTimeSetAllowed = true;
 
     // -------------------------
     //     LENGTH MULTIPLIERS
@@ -47,6 +47,10 @@ public class DayNightCycle : MonoBehaviour
     public Color nightFogColor = Color.black;
     public float dayFogDensity = 0.01f;
     public float nightFogDensity = 0.8f;
+    [Header("Performance")]
+    public float lightingUpdateInterval = 0.05f; 
+    private float lightingTimer = 0f;
+
 
     // -------------------------
     //         EVENTS
@@ -56,9 +60,17 @@ public class DayNightCycle : MonoBehaviour
     public UnityEvent onSunset;
     public UnityEvent onNewDay;
 
+    [Header("Extra Time-of-Day Events")]
+    public UnityEvent onMorning;
+    public UnityEvent onNoon;
+    public UnityEvent onEvening;
+
     // Internal state
     private bool sunriseTriggered = false;
     private bool sunsetTriggered = false;
+    private bool morningTriggered = false;
+    private bool noonTriggered = false;
+    private bool eveningTriggered = false;
 
     private float currentExposure = 1f;
     private float currentSunIntensity = 1f;
@@ -72,10 +84,7 @@ public class DayNightCycle : MonoBehaviour
     // -------------------------
     void Start()
     {
-        // Set starting time typed in inspector
         timeOfDay = Mathf.Clamp(startTimeOfDay, 0f, 24f);
-
-        // Update scene immediately to reflect starting time
         UpdateLighting();
     }
 
@@ -87,9 +96,16 @@ public class DayNightCycle : MonoBehaviour
         if (cycleEnabled)
             AdvanceTime();
 
-        UpdateLighting();
-        HandleEvents();
+        lightingTimer += Time.deltaTime;
+        if (lightingTimer >= lightingUpdateInterval)
+        {
+            lightingTimer = 0f;
+            UpdateLighting();  
+        }
+
+        HandleEvents(); 
     }
+
 
     // -------------------------
     //     TIME CONTROL API
@@ -136,78 +152,95 @@ public class DayNightCycle : MonoBehaviour
     // -------------------------
     private void UpdateLighting()
     {
+        // Fraction of day for gradient/curves (0-1)
         float t = timeOfDay / 24f;
-        bool night = (timeOfDay >= 18f || timeOfDay < 6f);
 
-        // Sun rotation
-        float sunAngle;
+        // -----------------
+        // Sun visibility
+        // -----------------
+        bool sunVisible = timeOfDay >= 5f && timeOfDay <= 18f;
 
-        if (!night)
+        // -----------------
+        // Sun rotation (circular)
+        // -----------------
+        // 0° at 6 AM (sunrise), 90° at noon, 180° at 14 (sunset), 270° at midnight
+        float sunAngle = (timeOfDay / 24f) * 360f - 90f;
+        if (directionalLight != null)
         {
-            float dayT = (timeOfDay - 6f) / 12f;
-            sunAngle = Mathf.Lerp(-90f, 90f, dayT);
-        }
-        else
-        {
-            float nightT = timeOfDay >= 18f
-                ? (timeOfDay - 18f) / 12f
-                : (timeOfDay + 6f) / 12f;
-
-            sunAngle = Mathf.Lerp(90f, 270f, nightT);
+            directionalLight.transform.localRotation = Quaternion.Euler(sunAngle, 170f, 0);
+            directionalLight.enabled = sunVisible; // hide during night
         }
 
-        directionalLight.transform.localRotation =
-            Quaternion.Euler(sunAngle, 170f, 0);
-
+        // -----------------
         // Sun color
-        Color targetSunColor = night ? Color.black : lightColor.Evaluate(t);
+        // -----------------
+        Color targetSunColor;
+        if (timeOfDay >= 5f && timeOfDay < 7f) // Dawn
+            targetSunColor = Color.Lerp(Color.black, lightColor.Evaluate(0.25f), Mathf.InverseLerp(5f, 7f, timeOfDay));
+        else if (timeOfDay >= 7f && timeOfDay < 14f) // Day
+            targetSunColor = lightColor.Evaluate(Mathf.InverseLerp(7f, 14f, timeOfDay));
+        else if (timeOfDay >= 14f && timeOfDay <= 18f) // Evening
+            targetSunColor = Color.Lerp(lightColor.Evaluate(0.75f), Color.black, Mathf.InverseLerp(14f, 18f, timeOfDay));
+        else // Night
+            targetSunColor = Color.black;
+
         currentSunColor = Color.Lerp(currentSunColor, targetSunColor, Time.deltaTime * 2f);
-        directionalLight.color = currentSunColor;
+        if (directionalLight != null) directionalLight.color = currentSunColor;
 
+        // -----------------
         // Sun intensity
-        float targetIntensity = night ? 0.2f : lightIntensity.Evaluate(t);
+        // -----------------
+        float targetIntensity = 0f;
+        if (timeOfDay >= 5f && timeOfDay < 7f)        // Dawn: 0 → 1
+            targetIntensity = Mathf.InverseLerp(5f, 7f, timeOfDay);
+        else if (timeOfDay >= 7f && timeOfDay < 14f)  // Day: full brightness
+            targetIntensity = 1f;
+        else if (timeOfDay >= 14f && timeOfDay <= 18f) // Evening: 1 → 0
+            targetIntensity = Mathf.InverseLerp(18f, 14f, timeOfDay);
+        else
+            targetIntensity = 0f; // Night
+
         currentSunIntensity = Mathf.Lerp(currentSunIntensity, targetIntensity, Time.deltaTime * 2f);
-        directionalLight.intensity = currentSunIntensity;
+        if (directionalLight != null) directionalLight.intensity = currentSunIntensity;
 
+        // -----------------
         // Skybox exposure
-        float targetExposure = night ? 0.2f : skyboxExposure.Evaluate(t);
+        // -----------------
+        float targetExposure;
+        if (timeOfDay >= 5f && timeOfDay < 7f)        // Dawn: subtle rise
+            targetExposure = Mathf.Lerp(0.2f, skyboxExposure.Evaluate(0.25f), Mathf.InverseLerp(5f, 7f, timeOfDay));
+        else if (timeOfDay >= 7f && timeOfDay < 14f)  // Day
+            targetExposure = skyboxExposure.Evaluate(Mathf.InverseLerp(7f, 14f, timeOfDay));
+        else if (timeOfDay >= 14f && timeOfDay <= 18f) // Evening: decrease
+            targetExposure = Mathf.Lerp(skyboxExposure.Evaluate(0.75f), 0.2f, Mathf.InverseLerp(14f, 18f, timeOfDay));
+        else
+            targetExposure = 0.2f; // Night
+
         currentExposure = Mathf.Lerp(currentExposure, targetExposure, Time.deltaTime * 2f);
+        if (skyboxMaterial != null) skyboxMaterial.SetFloat("_Exposure", currentExposure);
 
-        if (skyboxMaterial)
-            skyboxMaterial.SetFloat("_Exposure", currentExposure);
+        // -----------------
+        // Ambient light & reflection
+        // -----------------
+        Color targetAmbientColor = (timeOfDay >= 5f && timeOfDay < 18f) ? Color.white : Color.black;
+        float targetAmbientIntensity = (timeOfDay >= 5f && timeOfDay < 18f) ? 1f : 0f;
+        float targetReflectionIntensity = targetAmbientIntensity;
 
-        // Ambient light
-        RenderSettings.ambientLight = Color.Lerp(
-            RenderSettings.ambientLight,
-            night ? Color.black : Color.white,
-            Time.deltaTime * 2f
-        );
+        RenderSettings.ambientLight = Color.Lerp(RenderSettings.ambientLight, targetAmbientColor, Time.deltaTime * 2f);
+        RenderSettings.ambientIntensity = Mathf.Lerp(RenderSettings.ambientIntensity, targetAmbientIntensity, Time.deltaTime * 2f);
+        RenderSettings.reflectionIntensity = Mathf.Lerp(RenderSettings.reflectionIntensity, targetReflectionIntensity, Time.deltaTime * 2f);
 
-        RenderSettings.ambientIntensity = Mathf.Lerp(
-            RenderSettings.ambientIntensity,
-            night ? 0f : 1f,
-            Time.deltaTime * 2f
-        );
-
-        RenderSettings.reflectionIntensity = Mathf.Lerp(
-            RenderSettings.reflectionIntensity,
-            night ? 0f : 1f,
-            Time.deltaTime * 2f
-        );
-
+        // -----------------
         // Fog
-        RenderSettings.fogColor = Color.Lerp(
-            RenderSettings.fogColor,
-            night ? nightFogColor : dayFogColor,
-            Time.deltaTime * 2f
-        );
+        // -----------------
+        Color targetFogColor = (timeOfDay >= 5f && timeOfDay < 18f) ? dayFogColor : nightFogColor;
+        float targetFogDensity = (timeOfDay >= 5f && timeOfDay < 18f) ? dayFogDensity : nightFogDensity;
 
-        RenderSettings.fogDensity = Mathf.Lerp(
-            RenderSettings.fogDensity,
-            night ? nightFogDensity : dayFogDensity,
-            Time.deltaTime * 2f
-        );
+        RenderSettings.fogColor = Color.Lerp(RenderSettings.fogColor, targetFogColor, Time.deltaTime * 2f);
+        RenderSettings.fogDensity = Mathf.Lerp(RenderSettings.fogDensity, targetFogDensity, Time.deltaTime * 2f);
     }
+
+
 
     // -------------------------
     //        EVENT HANDLING
@@ -225,6 +258,32 @@ public class DayNightCycle : MonoBehaviour
 
             sunriseTriggered = true;
             sunsetTriggered = false;
+
+            // Reset other triggers for the new day
+            morningTriggered = false;
+            noonTriggered = false;
+            eveningTriggered = false;
+        }
+
+        // Morning at 9
+        if (timeOfDay >= 9f && timeOfDay < 9.05f && !morningTriggered)
+        {
+            onMorning.Invoke();
+            morningTriggered = true;
+        }
+
+        // Noon at 12
+        if (timeOfDay >= 12f && timeOfDay < 12.05f && !noonTriggered)
+        {
+            onNoon.Invoke();
+            noonTriggered = true;
+        }
+
+        // Evening at 16
+        if (timeOfDay >= 16f && timeOfDay < 16.05f && !eveningTriggered)
+        {
+            onEvening.Invoke();
+            eveningTriggered = true;
         }
 
         // Sunset at 18
