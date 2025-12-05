@@ -653,9 +653,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edabf8692325faf44bd96b863975403e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawner
---- !u!1 &1480897959 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2849575185548584489, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+--- !u!4 &1480897960 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9096635924145953907, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
   m_PrefabInstance: {fileID: 1929808654}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1558925283
@@ -1617,6 +1617,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: player
       objectReference: {fileID: 0}
+    - target: {fileID: 2925882801924082527, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: tablet
+      value: 
+      objectReference: {fileID: 1480897960}
+    - target: {fileID: 2925882801924082527, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: 'items.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1173782765}
     - target: {fileID: 3169948662624445101, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
       propertyPath: m_LocalPosition.x
       value: 312.76462
@@ -1720,7 +1728,35 @@ PrefabInstance:
     - target: {fileID: 7153522481069066250, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
       propertyPath: tablet
       value: 
-      objectReference: {fileID: 1480897959}
+      objectReference: {fileID: 2100000, guid: 3c0c1f6f914e7584a9381d813514c84e, type: 2}
+    - target: {fileID: 9096635924145953907, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.3174946
+      objectReference: {fileID: 0}
+    - target: {fileID: 9096635924145953907, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.0144653
+      objectReference: {fileID: 0}
+    - target: {fileID: 9096635924145953907, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9685573
+      objectReference: {fileID: 0}
+    - target: {fileID: 9096635924145953907, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.24879071
+      objectReference: {fileID: 0}
+    - target: {fileID: 9096635924145953907, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9096635924145953907, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9096635924145953907, guid: 13f1bbfd125248b4c810b59d11379543, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 28.812
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
