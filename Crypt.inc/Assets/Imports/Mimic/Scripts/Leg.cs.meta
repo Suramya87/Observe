@@ -1,7 +1,11 @@
 fileFormatVersion: 2
-guid: 9fc0d4010bbf28b4594072e72b8655ab
-DefaultImporter:
+guid: 7d689dd698bef9544bb6e1f078a8757e
+MonoImporter:
   externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -10,5 +14,5 @@ AssetOrigin:
   productId: 245997
   packageName: Mimic prototype
   packageVersion: 1.0
-  assetPath: Assets/Imports/ADG_Textures/Demo/DemoScene.unity
+  assetPath: Assets/Mimic/Scripts/Leg.cs
   uploadId: 560288
