@@ -252,6 +252,7 @@ MonoBehaviour:
   heightRange01: {x: 0.05, y: 0.9}
   scaleRange: {x: 0.8, y: 1.3}
   clearTreesOnPad: 1
+  terrainAsset: {fileID: 0}
   generateSlopeSplat: 1
   flatLayer: {fileID: 8574412962073106934, guid: d39b6ab9e74ab9143b3f843de20773a2, type: 2}
   steepLayer: {fileID: 8574412962073106934, guid: cf945275c9496ba40a445fe26a61e019, type: 2}
@@ -9710,6 +9711,7 @@ GameObject:
   - component: {fileID: 1974495741}
   - component: {fileID: 1974495744}
   - component: {fileID: 1974495745}
+  - component: {fileID: 1974495746}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -9858,6 +9860,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1974495746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974495740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c736da768eeb6544dab0af6cc9dace70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationSceneController
+  animator: {fileID: 1974495745}
+  nextSceneName: Level 1
+  animationLength: 31
 --- !u!1 &1995611480
 GameObject:
   m_ObjectHideFlags: 0
