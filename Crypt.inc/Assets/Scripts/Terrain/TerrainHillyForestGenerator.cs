@@ -15,6 +15,8 @@ public class TerrainHillyForestGenerator : MonoBehaviour
     [Range(0f, 1f)] public float persistence = 0.5f;
     public float lacunarity = 2.0f;
 
+
+
     // ------------------ NEW: Multiple flat base areas ------------------
     public enum BaseHeightMode { SampleTerrain, UsePadHeight01 }
 
@@ -72,6 +74,9 @@ public class TerrainHillyForestGenerator : MonoBehaviour
     public Vector2 scaleRange = new Vector2(0.8f, 1.3f);
     public bool clearTreesOnPad = true;
 
+    [Header("Runtime / Asset")]
+    public TerrainData terrainAsset;
+
     // ---------- NEW: Terrain texturing ----------
     [Header("Terrain Texturing (Slope Debug)")]
     public bool generateSlopeSplat = true;
@@ -127,10 +132,16 @@ public class TerrainHillyForestGenerator : MonoBehaviour
     [ContextMenu("Generate Terrain + Trees")]
     public void GenerateAll()
     {
+#if UNITY_EDITOR
+        if (Application.isPlaying)
+        {
+            Debug.LogWarning("[TerrainGen] Don't run GenerateAll in Play mode. Do it in Edit mode so the asset persists.");
+            return;
+        }
+#endif
+
         PrepareTerrainAsset();
         GenerateHeights();
-
-        // ★ NEW: auto-paint terrain based on slope
         GenerateSlopeSplatmap();
 
         if (placeBasePrefab)
@@ -142,6 +153,7 @@ public class TerrainHillyForestGenerator : MonoBehaviour
         if (clearTreesOnPad)
             ClearTreesOnPads();
     }
+
 
     [ContextMenu("Place Base Only")]
     void PlaceBaseOnly()
@@ -170,25 +182,41 @@ public class TerrainHillyForestGenerator : MonoBehaviour
 
     void PrepareTerrainAsset()
     {
-        terrain = GetComponent<Terrain>();
-        data = new TerrainData();
+        if (!terrain) terrain = GetComponent<Terrain>();
+
+        // If we already have an asset assigned, reuse it.
+        if (terrainAsset != null)
+        {
+            data = terrainAsset;
+        }
+        else
+        {
+            data = new TerrainData();
+
+#if UNITY_EDITOR
+            string path = GetUniquePath("Assets/GeneratedTerrain.asset");
+            UnityEditor.AssetDatabase.CreateAsset(data, path);
+            UnityEditor.AssetDatabase.SaveAssets();
+            Debug.Log("[TerrainGen] Created new TerrainData asset at " + path);
+#endif
+
+            terrainAsset = data;   // remember it for next time
+        }
+
+        // Always keep resolution / size synced
         data.heightmapResolution = Mathf.Max(heightmapResolution.x, heightmapResolution.y);
         data.size = terrainSize;
 
+        // Hook into Terrain and Collider
         terrain.terrainData = data;
 
-        // ★ NEW: keep collider in sync
         var terrainCollider = GetComponent<TerrainCollider>();
         if (terrainCollider != null)
         {
             terrainCollider.terrainData = data;
         }
-
-#if UNITY_EDITOR
-        UnityEditor.AssetDatabase.CreateAsset(data, GetUniquePath("Assets/GeneratedTerrain.asset"));
-        UnityEditor.AssetDatabase.SaveAssets();
-#endif
     }
+
 
 
 #if UNITY_EDITOR
