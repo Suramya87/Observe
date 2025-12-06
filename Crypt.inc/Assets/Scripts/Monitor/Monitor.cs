@@ -113,19 +113,25 @@ public class TVScreenController : MonoBehaviour
     {
         if (!screenRenderer) return;
 
+        if (mpb == null)
+            mpb = new MaterialPropertyBlock();
+
         mpb.Clear();
 
         if (isOn && screenRT)
         {
+            // ON: use the render texture
             mpb.SetTexture(BaseMapID, screenRT);
             mpb.SetColor(BaseColorID, Color.white);
         }
         else
         {
-            mpb.SetTexture(BaseMapID, null);
+            // OFF: just change the color, don't set a null texture
             mpb.SetColor(BaseColorID, offColor);
+            // NOTE: no SetTexture here
         }
 
         screenRenderer.SetPropertyBlock(mpb);
     }
+
 }

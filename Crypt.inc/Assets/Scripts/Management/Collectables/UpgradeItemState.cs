@@ -2,25 +2,21 @@ using UnityEngine;
 
 public enum UpgradeItemState
 {
-    InWorld,      // sitting out on the terrain
-    InInventory,  // currently carried by the player
-    InBase        // delivered to base
+    InWorld,
+    InInventory,
+    InBase
 }
 
 public class UpgradeItem : MonoBehaviour, IInteractable
 {
     [Header("ID / State")]
-    [SerializeField] string itemId = "Relic_A";   // set per prefab
+    [SerializeField] string itemId = "Relic_A";   
     [SerializeField] UpgradeItemState state = UpgradeItemState.InWorld;
 
-    [Header("Visuals (optional)")]
-    [Tooltip("World model to show when the item is in the world.")]
-    public GameObject worldModel;   // assign the mesh/visual here
+    [Header("Visuals")]
+    public GameObject worldModel;
 
-    // --- IInteractable ---
     public string Prompt => $"Pick up {itemId}";
-    // ---------------------
-
     public string ItemId => itemId;
     public UpgradeItemState State => state;
 
@@ -42,7 +38,6 @@ public class UpgradeItem : MonoBehaviour, IInteractable
             worldModel.SetActive(state == UpgradeItemState.InWorld);
     }
 
-    // Called by PlayerControllerCC.Interact() when you left-click this object
     public void Interact(Transform interactor)
     {
         if (state != UpgradeItemState.InWorld) return;
@@ -51,16 +46,11 @@ public class UpgradeItem : MonoBehaviour, IInteractable
             interactor.GetComponent<PlayerUpgradeInventory>() ??
             interactor.GetComponentInParent<PlayerUpgradeInventory>();
 
-        if (inventory == null)
-        {
-            Debug.LogWarning("[UpgradeItem] Interactor has no PlayerUpgradeInventory.");
-            return;
-        }
+        if (inventory == null) return;
 
         if (inventory.TryPickup(this))
         {
             SetState(UpgradeItemState.InInventory);
-            Debug.Log($"[UpgradeItem] Picked up {itemId}, now InInventory.");
         }
     }
 }
