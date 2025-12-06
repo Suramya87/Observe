@@ -274,13 +274,29 @@ public class PlayerControllerCC : MonoBehaviour
             return;
         }
 
+        Debug.Log($"[Player] Calling Interact on {chosen} (type {chosen.GetType().Name})", hitGO);
+
         try
         {
             chosen.Interact(transform);
+        }
+        catch (System.ArgumentNullException ane)
+        {
+            // 🔍 This is the important bit:
+            var site = ane.TargetSite;
+            string where =
+                site == null
+                ? "(unknown)"
+                : $"{site.DeclaringType?.FullName}.{site.Name}";
+
+            Debug.LogError($"[DEBUG] ArgumentNullException thrown in: {where}\nParameter: {ane.ParamName}\nMessage: {ane.Message}", hitGO);
+            Debug.LogException(ane, hitGO);
         }
         catch (System.Exception ex)
         {
             Debug.LogException(ex, hitGO);
         }
     }
+
+
 }
