@@ -58,7 +58,14 @@ public class PoweredInteractable : MonoBehaviour, IInteractable, IPowerConsumer
     }
 
     // -------- IInteractable --------
-    public string Prompt => _i != null ? _i.Prompt : "";
+    public string Prompt
+    {
+        get
+        {
+            if (_i == null) return "";
+            return _i.Prompt ?? "";   // <<< never let a null escape
+        }
+    }
 
     public void Interact(Transform interactor)
     {
