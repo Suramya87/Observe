@@ -21,11 +21,11 @@ EditorBuildSettings:
     path: Assets/Scenes/chase.unity
     guid: 2dd5eb12f7d71c645b5857c2f4e5b00e
   - enabled: 1
-    path: Assets/Scenes/WIN.unity
-    guid: bfa9a461dbb205f47ac70f07d98115f8
-  - enabled: 1
     path: Assets/Scenes/Death.unity
     guid: 2d240acc733075e438275c747beb4914
+  - enabled: 1
+    path: Assets/Scenes/WIN.unity
+    guid: bfa9a461dbb205f47ac70f07d98115f8
   - enabled: 0
     path: Assets/Scenes/Level 2.unity
     guid: d2f2d1a317047744bbd68d023b54a166

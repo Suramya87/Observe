@@ -195,13 +195,12 @@ GameObject:
   - component: {fileID: 3169948662624445101}
   - component: {fileID: 1156535924984073971}
   - component: {fileID: 1603851938900213688}
-  - component: {fileID: 3798731528554401409}
   - component: {fileID: 6520402442856341937}
   - component: {fileID: 3262344718198969811}
   - component: {fileID: 4407710800892820643}
   - component: {fileID: 2925882801924082527}
   - component: {fileID: 3184455629480063813}
-  - component: {fileID: 8597175290301857414}
+  - component: {fileID: 8293613713141444935}
   m_Layer: 0
   m_Name: player
   m_TagString: Player
@@ -281,29 +280,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &3798731528554401409
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1278675106720885323}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!143 &6520402442856341937
 CharacterController:
   m_ObjectHideFlags: 0
@@ -521,7 +497,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &8597175290301857414
+--- !u!114 &8293613713141444935
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -532,12 +508,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8184a7b18c4dffc4ab3035da32fbc8b9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HammerRepairController
+  m_EditorClassIdentifier: Assembly-CSharp::HammerRepairController_Hold_Fixed
   playerController: {fileID: 3262344718198969811}
   hammerObject: {fileID: 4544337856200237889}
   repairKey: 323
   repairTextPrefab: {fileID: 3456274494027909885, guid: 95bddb88d9e252d43a2a34438db0e2f9, type: 3}
   repairTextDuration: 10
+  postRepairPrefab: {fileID: 3456274494027909885, guid: 5e83996b68340fa47b20f1bd0a97afa6, type: 3}
+  postRepairDuration: 1
   interactDistance: 3
   interactMask:
     serializedVersion: 2
@@ -1694,7 +1672,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 400000, guid: 7b3373950dc50ee4b94e5731f725de85, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1402415545689102262}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 7b3373950dc50ee4b94e5731f725de85, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3462484788015301946}
   m_SourcePrefab: {fileID: 100100000, guid: 7b3373950dc50ee4b94e5731f725de85, type: 3}
 --- !u!4 &4544337856200146785 stripped
 Transform:
@@ -1706,3 +1687,26 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 7b3373950dc50ee4b94e5731f725de85, type: 3}
   m_PrefabInstance: {fileID: 4544337856200271329}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3462484788015301946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4544337856200237889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8184a7b18c4dffc4ab3035da32fbc8b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HammerRepairController_UI_Prefab
+  playerController: {fileID: 3262344718198969811}
+  hammerObject: {fileID: 4544337856200237889}
+  repairKey: 323
+  repairTextPrefab: {fileID: 3456274494027909885, guid: 95bddb88d9e252d43a2a34438db0e2f9, type: 3}
+  repairTextDuration: 10
+  postRepairPrefab: {fileID: 0}
+  postRepairDuration: 1
+  interactDistance: 3
+  interactMask:
+    serializedVersion: 2
+    m_Bits: 1
