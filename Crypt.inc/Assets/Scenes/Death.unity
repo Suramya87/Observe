@@ -693,7 +693,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuUI
   optionsPanel: {fileID: 1846918649}
   creditsPanel: {fileID: 1555832503}
-  gameSceneName: Level 1
+  gameSceneName: MainMenu
 --- !u!1 &325340016
 GameObject:
   m_ObjectHideFlags: 0

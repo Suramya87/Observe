@@ -500,7 +500,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuUI
   optionsPanel: {fileID: 0}
   creditsPanel: {fileID: 1555832503}
-  gameSceneName: IntroAnimation
+  gameSceneName: chase
 --- !u!1 &325340016
 GameObject:
   m_ObjectHideFlags: 0

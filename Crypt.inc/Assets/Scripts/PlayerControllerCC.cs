@@ -69,6 +69,9 @@ public class PlayerControllerCC : MonoBehaviour
     [Tooltip("Which layers count as ground for surface detection")]
     public LayerMask groundMask = ~0;
 
+    [HideInInspector] public bool movementLocked = false;
+
+
     float stepTimer = 0f;
     AudioSource footstepSource;     // now private, auto-grabbed
     // ----------------------------------
@@ -90,8 +93,12 @@ public class PlayerControllerCC : MonoBehaviour
     {
         if (GamePauseController.IsPaused) return;
 
-        Look();
-        Move();
+            if (!movementLocked)
+            {
+                Look();
+                Move();
+            }
+
         UpdateCameraHeight();
         Interact();
     }
